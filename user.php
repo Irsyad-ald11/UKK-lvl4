@@ -3,7 +3,6 @@ session_start();
 include 'koneksi.php';
 if ($_SESSION['role'] != "user") {
     header('location: ./auth/login.php');
-    header('location: ./auth/register.php');
     exit();
 }
 
@@ -13,43 +12,154 @@ $row_total = mysqli_fetch_assoc($hitung_total);
 $total_alumni = $row_total['total'];
 ?>
 
-
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Manajemen Data Alumni</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-brand-red: #FF1E1E;
+            --color-brand-blue: #0046FF;
+        }
+    </style>
+
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <style>
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body {
+            background: 
+                radial-gradient(circle at top left, rgba(255, 30, 30, 0.06), transparent 45%),
+                radial-gradient(circle at bottom right, rgba(0, 70, 255, 0.06), transparent 45%),
+                linear-gradient(-45deg, #fefefe, #fcfcfc, #fafafa, #fff5f5);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        /* Custom Scrollbar Lebih Halus */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #FF1E1E, #0046FF);
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0046FF;
+        }
+
+        /* Glassmorphism Premium */
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+
+        /* Animasi Floating Logo */
+        .floating {
+            animation: floating 3.5s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                box-shadow: 0 10px 25px -5px rgba(255, 30, 30, 0.4);
+            }
+            50% {
+                transform: translateY(-6px) rotate(3deg);
+                box-shadow: 0 20px 35px -5px rgba(0, 70, 255, 0.4);
+            }
+        }
+
+        /* Animasi Shimmer Efek Berkilau */
+        .shimmer-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shimmer-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.4) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(25deg);
+            transition: none;
+        }
+
+        .shimmer-effect:hover::after {
+            transition: all 0.9s ease-in-out;
+            left: 140%;
+        }
+
+        /* Hover Row Tabel Dinamis Merah ke Biru */
+        .table-hover {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .table-hover:hover {
+            transform: scale(1.003) translateX(6px);
+            background-color: rgba(255, 245, 245, 0.8) !important;
+            box-shadow: inset 5px 0 0 0 #0046FF, 0 10px 20px -10px rgba(0,0,0,0.05);
+        }
+    </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 min-h-full font-sans antialiased flex flex-col m-0 p-0">
+<body class="min-h-screen text-slate-800 font-sans overflow-x-hidden flex flex-col">
 
-    <header>
-        <nav class="fixed top-0 left-0 w-full bg-gradient-to-r from-red-700 to-red-600 text-white py-3.5 px-4 shadow-lg z-50 backdrop-blur-md bg-opacity-95">
-            <div class="container mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <h1 class="text-xl font-extrabold tracking-tight">Manajemen Data Alumni</h1>
-                    <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full border border-white/10">User Panel</span>
+     <header>
+        <nav class="fixed top-0 left-0 w-full z-50 bg-slate-900 border-b border-slate-800/80 shadow-lg shadow-slate-950/20 transition-all duration-300">
+            <div class="container mx-auto max-w-7xl px-5 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                
+                <div class="flex items-center gap-3 group cursor-pointer">
+                    <div>
+                        <h1 class="text-2xl font-black bg-gradient-to-r from-brand-red to-brand-blue bg-clip-text text-transparent transition-all duration-500">
+                            Manajemen Data Alumni
+                        </h1>
+                        <p class="text-xs text-slate-400 font-bold tracking-wider uppercase">
+                            Dashboard User
+                        </p>
+                    </div>
                 </div>
 
-                <div class="flex flex-wrap items-center justify-center md:justify-end gap-5 w-full md:w-auto">
-                    <div class="flex items-center gap-3 w-full sm:w-auto justify-center">
-                        <div class="bg-white text-red-600 py-2 px-4 text-xs font-bold rounded-xl flex items-center gap-2 shadow-sm border border-red-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user">
-                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
-                            <p><?= $_SESSION['username'] ?></p>
+                <div class="flex items-center gap-6 flex-wrap">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gradient-to-r from-brand-red to-brand-blue hover:from-brand-blue hover:to-brand-red hover:scale-105 active:scale-95 text-white px-5 py-2.5 rounded-2xl font-semibold shadow-lg shadow-brand-blue/20 transition-all duration-500 shimmer-effect flex items-center gap-2">
+                            <p class="font-bold text-sm text-slate-200">
+                                <?= htmlspecialchars($_SESSION['username']) ?>
+                            </p>
                         </div>
-                        <a href="logout.php" class="border border-white/40 bg-white/10 hover:bg-white hover:text-red-600 text-xs py-2 px-4 font-bold rounded-xl transition-all duration-200 flex items-center gap-2 active:scale-[0.98]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out">
+
+                        <a href="logout.php"
+                            class="bg-gradient-to-r from-brand-red to-brand-blue hover:from-brand-blue hover:to-brand-red hover:scale-105 active:scale-95 text-white px-5 py-2.5 rounded-2xl font-semibold shadow-lg shadow-brand-blue/20 transition-all duration-500 shimmer-effect flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m16 17 5-5-5-5" />
                                 <path d="M21 12H9" />
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                             </svg>
-                            <p>Logout</p>
+                            Logout
                         </a>
                     </div>
                 </div>
@@ -57,105 +167,173 @@ $total_alumni = $row_total['total'];
         </nav>
     </header>
 
-    <main class="container mx-auto max-w-7xl pt-28 pb-12 px-4">
+    <main class="container mx-auto max-w-7xl px-4 pt-36 pb-14 flex-grow">
 
-        <div id="content"></div>
+        <section class="mb-10" data-aos="fade-up" data-aos-duration="1000">
+            <div class="glass rounded-[2.5rem] p-8 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white/60 relative overflow-hidden group">
+                
+                <div class="absolute -top-16 -right-16 w-60 h-60 bg-gradient-to-br from-brand-red/10 to-brand-blue/5 rounded-full blur-3xl group-hover:scale-125 transition-all duration-700"></div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200/60 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+                    <div>
+                        <span class="bg-red-50 border border-red-100 text-brand-red text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-widest mb-3 inline-block">
+                            Akses Panel Alumni
+                        </span>
+                        <h1 class="text-4xl md:text-5xl font-black leading-tight text-slate-900 tracking-tight">
+                            Selamat Datang, <?= htmlspecialchars($_SESSION['username']) ?>!
+                        </h1>
+                        <p class="text-slate-500 mt-3 text-lg max-w-xl leading-relaxed">
+                            Cari rekan angkatan, perluas jaringan komunikasi, dan pantau perkembangan direktori alumni sekolah.
+                        </p>
+                    </div>
 
-            <div class="flex-1 max-w-2xl">
-                <!-- Form Pencarian -->
-                <form method="GET" class="flex items-center gap-2">
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8" />
-                                <path d="m21 21-4.3-4.3" />
+                    <div class="w-full lg:w-auto">
+                        <div class="bg-gradient-to-br from-red-50/60 to-white rounded-3xl p-6 shadow-sm border border-red-100/80 hover:-translate-y-2 hover:shadow-xl hover:border-brand-red/30 transition-all duration-300 group/card relative overflow-hidden flex flex-col justify-between min-w-[200px] shimmer-effect">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <p class="text-slate-500 text-sm font-semibold tracking-wide uppercase">Total Terdata</p>
+                            </div>
+                            <h2 class="text-4xl font-black mt-4 text-brand-red transition-transform duration-300 group-hover/card:scale-105 inline-block">
+                                <?= $total_alumni ?> <span class="text-lg font-bold text-slate-400">Alumni</span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
+            <div class="glass rounded-3xl p-5 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-white/60">
+                <div class="w-full">
+                    
+                    <form method="GET" class="flex w-full gap-3">
+                        <div class="relative flex-1 group">
+                            <input type="text"
+                                name="cari"
+                                value="<?= isset($_GET['cari']) ? htmlspecialchars($_GET['cari']) : '' ?>"
+                                placeholder="Cari nama, jurusan, atau tahun lulus..."
+                                class="w-full bg-white border border-slate-200 shadow-sm rounded-2xl px-5 py-4 pl-12 text-sm focus:outline-none focus:ring-4 focus:ring-brand-red/10 focus:border-brand-red transition-all duration-300" required>
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-red group-focus-within:scale-110 transition-all duration-300"
+                                width="18" height="18"
+                                fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.3-4.3"></path>
                             </svg>
                         </div>
-                        <input type="text" name="cari" placeholder="Cari Nama / Tahun Lulus / Jurusan..."
-                            value="<?= isset($_GET['cari']) ? $_GET['cari'] : '' ?>"
-                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white focus:ring-4 focus:ring-red-500/10 transition-all duration-200" required>
-                    </div>
-                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm px-5 py-2.5 rounded-xl cursor-pointer transition-colors active:scale-[0.98]">
-                        Cari
-                    </button>
 
-                    <?php if (isset($_GET['cari']) && $_GET['cari'] != ''): ?>
-                        <a href="user.php" class="bg-slate-100 hover:bg-slate-200 text-slate-600 p-2.5 rounded-xl transition-colors border border-slate-200 flex items-center justify-center" title="Reset Pencarian">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                                <path d="M3 3v5h5" />
-                            </svg>
-                        </a>
-                    <?php endif; ?>
-                </form>
-            </div>
-            
-            <div class="flex items-center gap-2 self-end md:self-auto bg-slate-50 border border-slate-200/80 px-4 py-2 rounded-xl">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <p class="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                    Total Terdata: <span class="text-slate-900 font-extrabold ml-1"><?= $total_alumni ?> Alumni</span>
-                </p>
-            </div>
+                        <button type="submit"
+                            class="bg-brand-red hover:bg-brand-blue text-white px-7 py-4 rounded-2xl font-bold shadow-lg transition-all duration-300 cursor-pointer whitespace-nowrap active:scale-95">
+                            Cari Data
+                        </button>
 
-        </div>
+                        <?php if (isset($_GET['cari']) && $_GET['cari'] != ''): ?>
+                            <a href="user.php" 
+                                class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-500 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-sm" 
+                                title="Reset Pencarian">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                                    <path d="M3 3v5h5" />
+                                </svg>
+                            </a>
+                        <?php endif; ?>
+                    </form>
 
-        <!-- Table dahsboard -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-            <div class="overflow-x-auto w-full">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200/60 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                            <th class="px-6 py-4 text-center w-20">No</th>
-                            <th class="px-6 py-4">Nama Lengkap</th>
-                            <th class="px-6 py-4">Tahun Lulus</th>
-                            <th class="px-6 py-4">Jurusan/Program Studi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-
-                        <?php
-                        if (isset($_GET['cari'])) {
-                            $cari = $_GET['cari'];
-                            $result = mysqli_query($koneksi, "SELECT * FROM alumni
-                             WHERE nama LIKE '%$cari%'
-                             OR angkatan LIKE '%$cari%'
-                             OR jurusan LIKE '%$cari%'");
-                        } else {
-                            $result = mysqli_query($koneksi, "SELECT * FROM alumni");
-                        }
-                        ?>
-
-                        <?php
-                        while ($data = mysqli_fetch_assoc($result)) {
-                            // Mengubah keluaran string echo ke format komponen UI yang dinamis & bersih
-                            echo "<tr class='hover:bg-slate-50/80 transition-colors duration-150 text-sm text-slate-700 font-medium'>
-                                 <td class='px-6 py-4 text-center font-bold text-slate-400'>{$data['id']}</td>
-                                 <td class='px-6 py-4 font-semibold text-slate-900'>{$data['nama']}</td>
-                                 <td class='px-6 py-4'>
-                                     <span class='inline-flex items-center bg-red-50 text-red-700 text-xs px-2.5 py-1 rounded-md font-bold border border-red-100/50'>
-                                         {$data['angkatan']}
-                                     </span>
-                                 </td>
-                                 <td class='px-6 py-4 text-slate-600'>{$data['jurusan']}</td>
-                             </tr>";
-                        }
-                        ?>
-
-                    </tbody>
-                </table>
-            </div>
-
-            <?php if (mysqli_num_rows($result) == 0): ?>
-                <div class="p-8 text-center text-slate-400 text-sm font-medium">
-                    <p>Tidak ada data alumni yang ditemukan.</p>
                 </div>
-            <?php endif; ?>
-        </div>
-    </main>
+            </div>
+        </section>
 
-    <footer class="mt-auto shrink-0 w-full bg-slate-900 text-slate-300 border-t border-slate-800/80">
+        <section data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+            <div class="glass rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-white/60">
+                
+                <div class="px-8 py-6 border-b border-slate-100 bg-white/60">
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight">
+                        Direktori Alumni Resmi
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-0.5">
+                        Daftar publik alumni sekolah yang terverifikasi dalam sistem.
+                    </p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-slate-50 via-red-50/10 to-slate-50 text-left text-xs uppercase tracking-widest text-slate-500 font-bold border-b border-slate-100">
+                                <th class="px-8 py-5 text-center w-24">No</th>
+                                <th class="px-8 py-5">Nama Lengkap</th>
+                                <th class="px-8 py-5">Tahun Lulus</th>
+                                <th class="px-8 py-5">Jurusan / Program Studi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-slate-100/80 bg-white/40">
+                            <?php
+                            if (isset($_GET['cari'])) {
+                                $cari = mysqli_real_escape_string($koneksi, $_GET['cari']);
+                                $result = mysqli_query($koneksi, "SELECT * FROM alumni 
+                                    WHERE nama LIKE '%$cari%' 
+                                    OR angkatan LIKE '%$cari%' 
+                                    OR jurusan LIKE '%$cari%' ORDER BY id DESC");
+                            } else {
+                                $result = mysqli_query($koneksi, "SELECT * FROM alumni ORDER BY id DESC");
+                            }
+
+                            $no = 1;
+                            while ($data = mysqli_fetch_assoc($result)) {
+                            ?>
+                                <tr class="table-hover group/row">
+                                    <td class="px-8 py-5 text-center font-extrabold text-slate-400 group-hover/row:text-brand-blue transition-colors">
+                                        <?= $no++; ?>
+                                    </td>
+
+                                    <td class="px-8 py-5">
+                                        <div class="font-bold text-slate-900 group-hover/row:text-brand-blue transition-colors duration-200 text-base">
+                                            <?= htmlspecialchars($data['nama']) ?>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-8 py-5">
+                                        <span class="bg-red-50 text-brand-red border border-red-100 px-3.5 py-1.5 rounded-xl text-xs font-black shadow-sm inline-block tracking-wider group-hover/row:bg-brand-blue group-hover/row:text-white group-hover/row:border-brand-blue transition-all duration-300">
+                                            <?= htmlspecialchars($data['angkatan']) ?>
+                                        </span>
+                                    </td>
+
+                                    <td class="px-8 py-5">
+                                        <span class="bg-slate-50 text-slate-600 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs inline-block group-hover/row:bg-white group-hover/row:text-brand-blue group-hover/row:border-brand-blue/30 transition-all duration-300">
+                                            <?= htmlspecialchars($data['jurusan']) ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+
+                    <?php if (mysqli_num_rows($result) == 0): ?>
+                        <div class="py-24 text-center animate-fade-in" data-aos="zoom-in" data-aos-duration="600">
+                            <div class="w-24 h-24 mx-auto rounded-[2rem] bg-gradient-to-br from-red-50 to-slate-50 flex items-center justify-center mb-6 shadow-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    width="42" height="42"
+                                    fill="none" stroke="#FF1E1E"
+                                    stroke-width="2.5">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-black text-slate-800 tracking-tight">
+                                Data Tidak Ditemukan
+                            </h2>
+                            <p class="text-slate-500 mt-2 text-sm max-w-sm mx-auto">
+                                Maaf, kami tidak menemukan data alumni dengan kata kunci pencarian tersebut.
+                            </p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
+    </main>
+     <footer class="mt-auto shrink-0 w-full bg-slate-900 text-slate-300 border-t border-slate-800/80">
         <div class="pt-5 py-1">
             <div class="container mx-auto max-w-7xl flex flex-col justify-center gap-4">
                 <h1 class="text-2xl text-center font-bold text-white tracking-tight">Manajemen Data Alumni</h1>
@@ -166,12 +344,29 @@ $total_alumni = $row_total['total'];
         <hr class="border-t border-white/10 mt-6 mb-4 w-full max-w-4xl mx-auto" />
 
         <div class="mt-2 py-4 flex-col text-center text-xs text-slate-400 tracking-wide">
-            <p class="text-md font-medium">&copy; 2026 <span class="text-slate-500">Tim rasyid_ux</span></p>
+            <p class="text-md font-medium">&copy; 2026 <span class="text-slate-500">Irsyad ald</span></p>
         </div>
         </div>
     </footer>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
+    <script>
+        AOS.init({
+            duration: 1000,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            once: true
+        });
 
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 30) {
+                nav.classList.add('py-3', 'shadow-xl', 'bg-white/90');
+                nav.classList.remove('py-4', 'shadow-md', 'glass');
+            } else {
+                nav.classList.add('py-4', 'shadow-md', 'glass');
+                nav.classList.remove('py-3', 'shadow-xl', 'bg-white/90');
+            }
+        });
+    </script>
 </body>
-
 </html>
